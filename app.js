@@ -129,13 +129,19 @@ $(document).ready(function() {
     index = Math.floor(Math.random() * options.length);
     pick = options[index];
 
-    $("#questionblock").html("<h2>" + pick.question + "</h2>");
-    for (var i = 0; i < pick.choice.length; i++) {
-      var userChoice = $("<div>");
-      userChoice.addClass("answerchoice");
-      userChoice.html(pick.choice[i]);
-      userChoice.attr("data-guessvalue", i);
-      $("#answerblock").append(userChoice);
+    if (pick.shown) {
+      displayQuestion();
+    } else {
+      console.log(pick.question);
+
+      $("#questionblock").html("<h2>" + pick.question + "</h2>");
+      for (var i = 0; i < pick.choice.length; i++) {
+        var userChoice = $("<div>");
+        userChoice.addClass("answerchoice");
+        userChoice.html(pick.choice[i]);
+        userChoice.attr("data-guessvalue", i);
+        $("#answerblock").append(userChoice);
+      }
     }
     $(".answerchoice").on("click", function() {
       userGuess = parseInt($(this).attr("data-guessvalue"));
@@ -145,6 +151,10 @@ $(document).ready(function() {
         correctCount++;
         userGuess = "";
         $("#answerblock").html("<p>Correct!</p>");
+        setTimeout(function() {
+          displayQuestion();
+          runTimer();
+        }, 3000);
       } else {
         stop();
         wrongCount++;
@@ -154,6 +164,10 @@ $(document).ready(function() {
             pick.choice[pick.answer] +
             "</p>"
         );
+        setTimeout(function() {
+          displayQuestion();
+          runTimer();
+        }, 3000);
       }
     });
   }
@@ -169,18 +183,18 @@ $(document).ready(function() {
     wrongCount = 0;
     unanswerCount = 0;
   } else {
+    // runTimer();
+    // displayQuestion();
+  }
+
+  $("#reset").on("click", function() {
+    $("#reset").hide();
+    $("#answerblock").empty();
+    $("#questionblock").empty();
+    for (var i = 0; i < holder.length; i++) {
+      options.push(holder[i]);
+    }
     runTimer();
     displayQuestion();
-  }
-}, 3000);
-
-$("#reset").on("click", function() {
-  $("#reset").hide();
-  $("#answerblock").empty();
-  $("#questionblock").empty();
-  for (var i = 0; i < holder.length; i++) {
-    options.push(holder[i]);
-  }
-  runTimer();
-  displayQuestion();
+  });
 });
